@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fartbin is back???????????</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background: linear-gradient(125deg, #000000, #1a0038, #38006b, #000000);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes flash {
+            0% { color: rgb(255, 255, 255); text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
+            33% { color: #ff00ff; text-shadow: 0 0 15px rgba(255, 0, 255, 0.8); }
+            66% { color: #00ffff; text-shadow: 0 0 15px rgba(0, 255, 255, 0.8); }
+            100% { color: white; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
+        }
+
+        html, body {
+            scrollbar-width: thin;
+            scrollbar-color: #ff00ff #000;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 10px;
+        }
+
+        .glowing-text {
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                        0 0 30px rgba(255, 0, 255, 0.6),
+                        0 0 40px rgba(0, 255, 255, 0.4);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: textPulse 2s infinite;
+        }
+
+        @keyframes textPulse {
+            0% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4); }
+            50% { text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 0, 255, 0.8), 0 0 50px rgba(0, 255, 255, 0.6); }
+            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4); }
+        }
+
+        .main-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 15px;
+            width: 95%;
+            height: 93%;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff) 1;
+            color: #fff;
+            text-align: center;
+            animation: fadein 1s forwards;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.3), 
+                        0 0 100px rgba(0, 255, 255, 0.2),
+                        inset 0 0 30px rgba(255, 0, 255, 0.2);
+        }
+
+        .splash-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 100;
+            padding: 25px 50px;
+            background: rgba(10, 10, 30, 0.7);
+            border-radius: 15px;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff) 1;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5),
+                        inset 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .splash-button:hover {
+            background: rgba(50, 30, 70, 0.8);
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.7),
+                        inset 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        @keyframes fadeout {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; transform: translate(-50%, -55%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .content {
+            margin-top: 30px;
+            font-size: 22px;
+            line-height: 1.6;
+            animation: flash 4s infinite;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background: rgba(20, 10, 30, 0.6);
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+        }
+
+        .content h1 {
+            margin-bottom: 30px;
+            font-size: 3em;
+            letter-spacing: 4px;
+        }
+        
+        .content p {
+            margin-bottom: 15px;
+        }
+
+        .content p.warning {
+            color: #ff3366;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 0, 102, 0.7);
+            padding: 10px;
+            border: 2px solid #ff3366;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 15px;
+            font-size: 16px;
+            opacity: 0.8;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid #ff00ff;
+            color: #ccc;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Animated background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        /* Button styling */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px auto;
+            max-width: 900px;
+            padding: 20px;
+            background: rgba(10, 5, 20, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+        
+        .fancy-button {
+            background: linear-gradient(45deg, #ff00cc, #3333ff);
+            border: none;
+            color: white;
+            padding: 18px 30px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.7);
+            animation: pulse 3s infinite;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+            min-width: 150px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .fancy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.9);
+        }
+        
+        .fancy-button:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        .fancy-button i {
+            margin-right: 10px;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 255, 0.7); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.9), 0 0 40px rgba(255, 0, 255, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(255, 0, 255, 0.7); }
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Cool logo animation */
+        .logo-animation {
+            font-size: 60px;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: textGradient 5s linear infinite;
+            font-family: 'Press Start 2P', cursive;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.8);
+            letter-spacing: 4px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        @keyframes textGradient {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Glitch effect */
+        .glitch-effect {
+            position: relative;
+        }
+
+        .glitch-effect:after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            text-shadow: -2px 0 #ff00cc;
+            top: 0;
+            color: white;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+            animation: noise-anim 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-effect:before {
+            content: attr(data-text);
+            position: absolute;
+            left: -2px;
+            text-shadow: 2px 0 #00ffcc;
+            top: 0;
+            color: white;
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0);
+            animation: noise-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes noise-anim {
+            0% { clip: rect(12px, 9999px, 52px, 0); }
+            5% { clip: rect(54px, 9999px, 98px, 0); }
+            10% { clip: rect(67px, 9999px, 33px, 0); }
+            15% { clip: rect(92px, 9999px, 4px, 0); }
+            20% { clip: rect(12px, 9999px, 23px, 0); }
+            25% { clip: rect(82px, 9999px, 12px, 0); }
+            30% { clip: rect(32px, 9999px, 68px, 0); }
+            35% { clip: rect(20px, 9999px, 87px, 0); }
+            40% { clip: rect(26px, 9999px, 42px, 0); }
+            45% { clip: rect(13px, 9999px, 56px, 0); }
+            50% { clip: rect(46px, 9999px, 76px, 0); }
+            55% { clip: rect(10px, 9999px, 85px, 0); }
+            60% { clip: rect(61px, 9999px, 98px, 0); }
+            65% { clip: rect(87px, 9999px, 32px, 0); }
+            70% { clip: rect(53px, 9999px, 4px, 0); }
+            75% { clip: rect(82px, 9999px, 15px, 0); }
+            80% { clip: rect(32px, 9999px, 67px, 0); }
+            85% { clip: rect(20px, 9999px, 55px, 0); }
+            90% { clip: rect(26px, 9999px, 42px, 0); }
+            95% { clip: rect(13px, 9999px, 78px, 0); }
+            100% { clip: rect(46px, 9999px, 23px, 0); }
+        }
+
+        @keyframes noise-anim-2 {
+            0% { clip: rect(18px, 9999px, 42px, 0); }
+            5% { clip: rect(42px, 9999px, 78px, 0); }
+            10% { clip: rect(37px, 9999px, 73px, 0); }
+            15% { clip: rect(27px, 9999px, 84px, 0); }
+            20% { clip: rect(52px, 9999px, 63px, 0); }
+            25% { clip: rect(92px, 9999px, 22px, 0); }
+            30% { clip: rect(62px, 9999px, 18px, 0); }
+            35% { clip: rect(60px, 9999px, 47px, 0); }
+            40% { clip: rect(76px, 9999px, 32px, 0); }
+            45% { clip: rect(23px, 9999px, 66px, 0); }
+            50% { clip: rect(56px, 9999px, 36px, 0); }
+            55% { clip: rect(30px, 9999px, 55px, 0); }
+            60% { clip: rect(31px, 9999px, 68px, 0); }
+            65% { clip: rect(47px, 9999px, 22px, 0); }
+            70% { clip: rect(73px, 9999px, 14px, 0); }
+            75% { clip: rect(52px, 9999px, 35px, 0); }
+            80% { clip: rect(12px, 9999px, 47px, 0); }
+            85% { clip: rect(60px, 9999px, 15px, 0); }
+            90% { clip: rect(36px, 9999px, 92px, 0); }
+            95% { clip: rect(53px, 9999px, 48px, 0); }
+            100% { clip: rect(46px, 9999px, 63px, 0); }
+        }
+
+        /* Additional decorations */
+        .pixel-corner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 0.8;
+            z-index: 3;
+        }
+
+        .pixel-corner.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 5px solid #ff00ff;
+            border-left: 5px solid #ff00ff;
+        }
+
+        .pixel-corner.top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 5px solid #00ffff;
+            border-right: 5px solid #00ffff;
+        }
+
+        .pixel-corner.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 5px solid #00ffff;
+            border-left: 5px solid #00ffff;
+        }
+
+        .pixel-corner.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 5px solid #ff00ff;
+            border-right: 5px solid #ff00ff;
+        }
+
+        /* Audio controls styling */
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 100;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .audio-controls:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+        }
+
+        .audio-controls i {
+            font-size: 24px;
+            color: white;
+        }
+
+        /* Retro scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+
+        /* CRT screen flicker effect */
+        .crt-flicker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.05; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
+
+    <div class="splash-button">
+        <div class="glowing-text glitch-effect" data-text="fartbin.com">fartbin.com</div>
+    </div>
+    
+    <div class="main-container">
+        <div class="pixel-corner top-left"></div>
+        <div class="pixel-corner top-right"></div>
+        <div class="pixel-corner bottom-left"></div>
+        <div class="pixel-corner bottom-right"></div>
+
+        <div class="logo-animation glitch-effect" data-text="FARTBIN">FARTBIN</div>
+
+        <div class="content">
+            <h1 class="glowing-text">WELCOME TO FARTBIN</h1>
+            <p>We Are Back And Better Fuck Nigga</p>
+
+
+        </div>
+        
+        <div class="button-container">
+            <a href="https://fartbin.com/sav" class="fancy-button">
+                <i class="fas fa-info-circle"></i>Savannah Hemphill
+            </a>
+            <a href="https://fartbin.com/austin" class="fancy-button">
+                <i class="fas fa-info-circle"></i>Austin
+            </a>
+        </div>
+
+        <div class="footer">
+            © 2025 FARTBIN.COM - ALL RIGHTS RESERVED
+             
+        </div>
+    </div>
+
+    <div class="audio-controls">
+        <i class="fas fa-volume-up" id="volume-icon"></i>
+    </div>
+
+    <audio id="audio-background" loop>
+        <source src="files/sa.mp3" type="audio/mp3">
+    </audio>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particle background with better settings
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 120,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": ["#ff00ff", "#00ffff", "#ffffff"]
+                },
+                "shape": {
+                    "type": ["circle", "triangle", "edge"],
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.3,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 120,
+                    "color": "#ff00ff",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 3,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "repulse": {
+                        "distance": 100,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+         
+        document.querySelector(".splash-button").addEventListener("click", function() {
+            var button = this;
+            button.style.animation = "fadeout 1s forwards";
+            setTimeout(function() {
+                button.style.display = "none";
+            }, 1000);
+
+            var bgAudio = document.getElementById("audio-background");
+            document.querySelector(".main-container").style.display = "block";
+            bgAudio.src = getRandomSong();  
+            bgAudio.load();
+            
+             
+            document.addEventListener('click', function audioEnabler() {
+                bgAudio.play();
+                bgAudio.volume = 0.1;  // Set the volume to low
+                document.removeEventListener('click', audioEnabler);
+            }, { once: true });
+
+       
+            setTimeout(function() {
+                addRandomGlitchEffects();
+            }, 2000);
+        });
+
+        // Audio control toggle
+        document.querySelector(".audio-controls").addEventListener("click", function() {
+            var audio = document.getElementById("audio-background");
+            var icon = document.getElementById("volume-icon");
+            
+            if (audio.paused) {
+                audio.play();
+                icon.className = "fas fa-volume-up";
+            } else {
+                audio.pause();
+                icon.className = "fas fa-volume-mute";
+            }
+            
+            // Play a click sound
+            playRandomSound();
+        });
+
+        function getRandomSong() {
+            const songs = [
+            'files/sa.mp3',
+                'files/garbage.mp3',
+                'files/leak.mp3',
+                'files/bowt.mp3',
+                'files/step.mp3',
+                'files/danger.mp3',
+                'files/ccmw.mp3',
+                'files/ida.mp3',
+                'files/S-GANG.mp3',
+                'files/tf.mp3',
+                'files/mc.mp3'
+            ];
+            return songs[Math.floor(Math.random() * songs.length)];
+        }
+        
+        // Add click sound to fancy-buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.fancy-button');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    playHoverSound();
+                });
+                
+                button.addEventListener('click', function() {
+                    playRandomSound();
+                });
+            });
+        });
+        
+        function playRandomSound() {
+            const audioPitch = Math.random() * 500 + 700; // Higher pitch for better effect
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(audioPitch, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.15);
+                
+                setTimeout(() => {
+                    oscillator.stop();
+                }, 150);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+        
+        function playHoverSound() {
+            const audioPitch = Math.random() * 200 + 600;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(audioPitch, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.08);
+                
+                setTimeout(() => {
+                    oscillator.stop();
+                }, 80);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Add random glitch effects to elements
+        function addRandomGlitchEffects() {
+            setInterval(function() {
+                const headings = document.querySelectorAll('h1, .logo-animation');
+                const randomHeading = headings[Math.floor(Math.random() * headings.length)];
+                
+                if (randomHeading) {
+                    randomHeading.style.transform = `translateX(${(Math.random() * 6) - 3}px)`;
+                    
+                    setTimeout(function() {
+                        randomHeading.style.transform = 'translateX(0)';
+                    }, 100);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
